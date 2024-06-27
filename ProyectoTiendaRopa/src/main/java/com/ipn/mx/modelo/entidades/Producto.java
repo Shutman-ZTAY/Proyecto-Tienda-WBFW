@@ -55,5 +55,8 @@ public class Producto implements Serializable {
     private Categoria categoria;
     
     @ManyToMany(mappedBy = "productos")
-    private List<Pedido> productos;
+    private List<Pedido> pedidos;
+    
+    @Column(name = "imagen", length = 1000000*16)
+    private byte[] imagen;
 }

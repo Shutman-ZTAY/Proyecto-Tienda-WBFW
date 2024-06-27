@@ -75,7 +75,7 @@ public class Pedido implements Serializable {
     private Promocion promocion;
     
     @OneToOne
-    @JoinColumn(name = "idpromocion",  referencedColumnName = "idpromocion")
+    @JoinColumn(name = "idhistorial",  referencedColumnName = "idhistorial")
     private Historial historial;
  
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)

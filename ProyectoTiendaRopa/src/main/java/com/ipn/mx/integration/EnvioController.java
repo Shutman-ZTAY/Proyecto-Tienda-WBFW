@@ -44,11 +44,11 @@ public class EnvioController {
     }
 	
 	@GetMapping("/envios/{id}")
-	public ResponseEntity<Envio> readById(@PathVariable Long id) {
+	public ResponseEntity<?> readById(@PathVariable Long id) {
 		try {
 			Envio e = service.findById(id);
 			if (e == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontro el envio con id " + id);
 			}
 			return ResponseEntity.ok(e);
         } catch (Exception e) {
@@ -60,38 +60,38 @@ public class EnvioController {
 	public ResponseEntity<String> newEnvio(@RequestBody Envio envio) {
 		try {
 			Envio e = service.create(envio);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Pago insertado con ID " + e.getIdEnvio());
+			return ResponseEntity.status(HttpStatus.CREATED).body("Envio insertado con ID " + e.getIdEnvio());
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo insertar el pago");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo insertar el Envio");
 		}
 	}
 	
 	@DeleteMapping("/envios/{id}")
-	public ResponseEntity<String> deletPago(@PathVariable Long id){
+	public ResponseEntity<String> deletEnvio(@PathVariable Long id){
 		try {
 			Envio e = service.findById(id);
 			if (e == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encuentra pago con ID " + id);
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encuentra Envio con ID " + id);
 			}
 			service.delete(id);
 			return ResponseEntity.ok("Envio con ID " + id + " eliminado");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo eliminar el pago con ID " + id);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo eliminar el Envio con ID " + id);
         }
 	}
 	
 	@PutMapping("/envios/{id}")
-    public ResponseEntity<String> updatePago(@PathVariable Long id, @RequestBody Envio envio) {
+    public ResponseEntity<String> updateEnvio(@PathVariable Long id, @RequestBody Envio envio) {
         try {
         	Envio e = service.findById(id);
             if (e == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encuentra Pago con ID " + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encuentra Envio con ID " + id);
             }
             envio.setIdEnvio(id);
             Envio newE = service.update(envio);
-            return ResponseEntity.ok("Pago actualizado correctamente con ID: " + newE.getIdEnvio());
+            return ResponseEntity.ok("Envio actualizado correctamente con ID: " + newE.getIdEnvio());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo actualizar el pago");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo actualizar el Envio");
         }
 	}
 }
