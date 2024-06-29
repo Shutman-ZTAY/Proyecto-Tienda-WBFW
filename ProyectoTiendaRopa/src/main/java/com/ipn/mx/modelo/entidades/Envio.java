@@ -35,7 +35,7 @@ public class Envio implements Serializable {
 	@Column(name = "empresaProcediente", length = 80, nullable = false)
 	private String empresaProcediente;
 	@Column(name = "costo", nullable = false)
-	private Long costo;
+	private Float costo;
 	@ManyToOne
     @JoinColumn(name = "idPedido", nullable = false)
 	private Pedido pedido;

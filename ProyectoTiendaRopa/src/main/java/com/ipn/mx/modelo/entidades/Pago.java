@@ -30,7 +30,7 @@ public class Pago implements Serializable {
 	@Column(name = "idDocumento", nullable = false)
 	private Long idPago;
 	@Column(name = "totalPago", nullable = false)
-	private Long totalPago;
+	private Float totalPago;
 	@ManyToOne
     @JoinColumn(name = "idPedido", nullable = false)
 	private Pedido pedido;

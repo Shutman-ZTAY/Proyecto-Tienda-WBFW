@@ -30,7 +30,7 @@ public class PagoServiceImpl implements PagoService {
 	@Override
 	@Transactional(readOnly = false)
 	public Pago update(Pago pago) {
-		if (repo.existsById(pago.getIdPago())) {
+		if (!repo.existsById(pago.getIdPago())) {
 			return null;
 		}
 		return repo.save(pago);

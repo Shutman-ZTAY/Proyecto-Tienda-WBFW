@@ -90,7 +90,7 @@ public class PagoController {
             Pago newP = service.update(pago);
             return ResponseEntity.ok("Pago actualizado correctamente con ID: " + newP.getIdPago());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo actualizar el pago");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo actualizar el pago: \n" + e.getMessage());
         }
     }
 	
