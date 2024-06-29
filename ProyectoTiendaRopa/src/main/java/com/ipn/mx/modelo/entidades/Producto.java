@@ -3,8 +3,13 @@ package com.ipn.mx.modelo.entidades;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -54,7 +59,9 @@ public class Producto implements Serializable {
     @JoinColumn(name = "idcategoria", referencedColumnName = "idcategoria")
     private Categoria categoria;
     
-    @ManyToMany(mappedBy = "productos")
+    @ManyToMany(mappedBy = "productos", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("productos")
+    //@JsonBackReference
     private List<Pedido> pedidos;
     
     @Column(name = "imagen", length = 1000000*16)

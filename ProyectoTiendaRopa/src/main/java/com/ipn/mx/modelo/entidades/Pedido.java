@@ -4,9 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -28,6 +34,7 @@ import jakarta.persistence.TemporalType;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 @Entity
 @Table(name = "pedido")
 public class Pedido implements Serializable {
@@ -78,11 +85,13 @@ public class Pedido implements Serializable {
     @JoinColumn(name = "idhistorial",  referencedColumnName = "idhistorial")
     private Historial historial;
  
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
     		name = "Pedido_has_producto",
     		joinColumns = @JoinColumn(name = "idpedido", referencedColumnName = "idpedido"),
     		inverseJoinColumns = @JoinColumn(name = "idproducto", referencedColumnName = "idproducto")
     )
+    @JsonIgnoreProperties("pedidos")
+    //@JsonManagedReference
     private List<Producto> productos;
 }

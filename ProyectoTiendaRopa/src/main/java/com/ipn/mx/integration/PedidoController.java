@@ -7,10 +7,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.ipn.mx.modelo.entidades.Pedido;
+import com.ipn.mx.modelo.entidades.Producto;
 import com.ipn.mx.services.PdfReportService;
 import com.ipn.mx.services.PedidoService;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,10 +30,11 @@ public class PedidoController {
     @PostMapping("/pedido/insertar")
     public ResponseEntity<String> insertPedido(@RequestBody Pedido pedido) {
         try {
+        	System.out.println(pedido);
             Pedido nuevoPedido = pedidoService.crearyRegistrarPedido(pedido);
             return ResponseEntity.status(HttpStatus.CREATED).body("Pedido insertado con ID " + nuevoPedido.getIdpedido());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo insertar el pedido");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
@@ -47,22 +50,26 @@ public class PedidoController {
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe el pedido con ID: " + id));
             return ResponseEntity.ok().body(pedido);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al buscar el pedido con ID: " + id);
+        	System.out.println(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
     @PutMapping("/pedido/actualizar/{id}")
     public ResponseEntity<String> actualizarPedido(@PathVariable Long id, @RequestBody Pedido pedido) {
-        Optional<Pedido> optionalPedido = pedidoService.findById(id);
-        if (!optionalPedido.isPresent()) {
+        Pedido optionalPedido = pedidoService.findById(id).orElse(null);
+        if (optionalPedido == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encuentra pedido con ID " + id);
         }
         try {
             pedido.setIdpedido(id);
+            pedido.setCliente(optionalPedido.getCliente());
+            pedido.setHistorial(optionalPedido.getHistorial());	
+            pedido.setProductos(optionalPedido.getProductos());
             Pedido pedidoActualizado = pedidoService.savePedido(pedido);
             return ResponseEntity.ok("Pedido actualizado correctamente con ID: " + pedidoActualizado.getIdpedido());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo actualizar el pedido");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo actualizar el pedido: " + e.getMessage());
         }
     }
 

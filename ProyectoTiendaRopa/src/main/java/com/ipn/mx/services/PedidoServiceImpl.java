@@ -46,28 +46,29 @@ public class PedidoServiceImpl implements PedidoService {
         pedidoRepository.deleteById(id);
     }
 
-	@Transactional
+    @Transactional
     @Override
 	public Pedido crearyRegistrarPedido(Pedido pedido) {
-	        // Generar folio de compra
-	        pedido.setFoliocompra(generateFolio(pedido));
-	        // Guardar el pedido
-	        pedido = pedidoRepository.save(pedido);
+    	// Generar folio de compra
+    	pedido.setFoliocompra(generateFolio(pedido));
+    	// Guardar el pedido
 
-	        // Crear y guardar el historial
-	        Historial historial = new Historial();
-	        historial.setFolioCompra(pedido.getFoliocompra());
-	        LocalDateTime now = LocalDateTime.now();
-	        Date date = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
-	        historial.setFecha(date);
-	        historialRepository.save(historial);
+    	// Crear y guardar el historial
+    	Historial historial = new Historial();
+    	historial.setFolioCompra(pedido.getFoliocompra());
+    	LocalDateTime now = LocalDateTime.now();
+    	Date date = Date.from(now.atZone(ZoneId.systemDefault()).toInstant());
+    	historial.setFecha(date);
+    	Historial h = historialRepository.save(historial);
+    	pedido.setHistorial(h);
 
-	        return pedido;
-	    }
+    	pedido = pedidoRepository.save(pedido);
+    	return pedido;
+    }
 
-	    private String generateFolio(Pedido pedido) {
-	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-	        return "FOLIO-" + LocalDateTime.now().format(formatter);
-	    }
+    private String generateFolio(Pedido pedido) {
+    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    	return "FOLIO-" + LocalDateTime.now().format(formatter);
+    }
 
 }
