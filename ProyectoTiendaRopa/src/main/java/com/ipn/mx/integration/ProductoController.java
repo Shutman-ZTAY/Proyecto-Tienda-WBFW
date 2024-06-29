@@ -4,13 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ipn.mx.modelo.dto.ProductoDTO;
 import com.ipn.mx.modelo.entidades.Producto;
 import com.ipn.mx.services.PdfReportService;
 import com.ipn.mx.services.ProductoService;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -26,13 +30,29 @@ public class ProductoController {
     @Autowired
     private PdfReportService pdfReportService;
 
+    //En revision
     @PostMapping("/producto/insertar")
-    public ResponseEntity<String> insertProducto(@RequestBody Producto producto) {
+    public ResponseEntity<String> insertProducto(@RequestParam("producto") String productoJson,
+    		@RequestParam("file") MultipartFile file) throws IOException {
+    	ObjectMapper om = new ObjectMapper();
         try {
-            Producto nuevoProducto = productoService.saveProducto(producto);
+        	ProductoDTO pDTO = om.readValue(productoJson, ProductoDTO.class);
+        	Producto p = new Producto();
+        	p.setColor(pDTO.getColor());
+        	p.setDescripcion(pDTO.getDescripcion());
+        	p.setDisponibilidad(pDTO.getDisponibilidad());
+        	p.setNombre(pDTO.getNombre());
+        	p.setPrecio(pDTO.getPrecio());
+        	p.setTamaño(pDTO.getTamaño());
+        	p.setCategoria(pDTO.getCategoria());
+        	p.setPedidos(pDTO.getPedidos());
+        	p.setImagen(file.getBytes());
+        	
+            Producto nuevoProducto = productoService.saveProducto(p);
             String mensaje = "Producto insertado con ID " + nuevoProducto.getIdProducto();
             return ResponseEntity.status(HttpStatus.CREATED).body(mensaje);
         } catch (Exception e) {
+        	System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo insertar el producto");
         }
     }
@@ -58,18 +78,40 @@ public class ProductoController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al buscar el producto con ID: " + id);
         }
     }
-
+    
+    
+    // CAMBIAR PARA QUE ACEPTE IMAGENES
+    /*
+     * public ResponseEntity<String> insertProducto(@RequestParam("producto") String productoJson,
+    		@RequestParam("file") MultipartFile file) throws IOException 
+     * */
     @PutMapping("/producto/actualizar/{id}")
-    public ResponseEntity<String> actualizarProducto(@PathVariable Long id, @RequestBody Producto producto) {
-        Optional<Producto> optionalProducto = productoService.findById(id);
-        if (!optionalProducto.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encuentra producto con ID " + id);
-        }
+    public ResponseEntity<String> actualizarProducto(@PathVariable Long id, @RequestParam("producto") String productoJson,
+    		@RequestParam("file") MultipartFile file) throws IOException {
+    	ObjectMapper om = new ObjectMapper();
         try {
-            producto.setIdProducto(id);
-            Producto productoActualizado = productoService.saveProducto(producto);
+        	ProductoDTO pDTO = om.readValue(productoJson, ProductoDTO.class);
+        	Optional<Producto> optionalProducto = productoService.findById(id);
+            if (!optionalProducto.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encuentra producto con ID " + id);
+            }
+            
+            Producto p = new Producto();
+            p.setColor(pDTO.getColor());
+        	p.setDescripcion(pDTO.getDescripcion());
+        	p.setDisponibilidad(pDTO.getDisponibilidad());
+        	p.setNombre(pDTO.getNombre());
+        	p.setPrecio(pDTO.getPrecio());
+        	p.setTamaño(pDTO.getTamaño());
+        	p.setCategoria(pDTO.getCategoria());
+        	p.setImagen(file.getBytes());
+        	p.setPedidos(pDTO.getPedidos());
+            p.setIdProducto(id);
+            
+            Producto productoActualizado = productoService.saveProducto(p);
             return ResponseEntity.ok("Producto actualizado correctamente: " + productoActualizado.getNombre());
         } catch (Exception e) {
+        	System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se pudo actualizar el producto");
         }
     }
